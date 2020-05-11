@@ -23,9 +23,24 @@ set(SOURCES
 set(HEADERS
     ../inc/main.h)
 
+set(COMMON_INCLUDES
+    ../inc)
+
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
-include_directories(../inc /Users/amclach/Work/trunky/A2B/portaudio/include)
+if(APPLE)
+
+include_directories(${COMMON_INCLUDES} /Users/amclach/Work/trunky/A2B/portaudio/include)
+
+target_link_libraries(${PROJECT_NAME} /Users/amclach/Work/trunky/A2B/portaudio/build/libportaudio.dylib)
+
+else()
+
+include_directories(${COMMON_INCLUDES} /home/amclach/GitHub/portaudio/include)
+
+target_link_libraries(${PROJECT_NAME} /home/amclach/GitHub/portaudio/build/libportaudio.so)
+
+endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "portaudio-examples")
 
@@ -35,5 +50,3 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-Werror")
     
 set(CMAKE_CXX_FLAGS "-std=c++11")
-
-target_link_libraries(${PROJECT_NAME} /Users/amclach/Work/trunky/A2B/portaudio/build/libportaudio.dylib)
