@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="alsa-examples" default="all">
+
+	<property name="project.version" value="0.0.1"/>
+
+	<property environment="env"/>
+
+	<property name="artifacts" location="${basedir}/Artifacts"/>
+
+	<condition property="windows">
+		<os family="windows" />
+	</condition>
+
+	<condition property="linux">
+		<and>
+			<os family="unix" />
+			<not>
+				<os family="mac"/>
+			</not>
+		</and>
+	</condition>
+
+	<condition property="mac">
+		<os family="mac" />
+	</condition>
+
+	<!-- 
+	=================================================================================
+	init-${os}: initialize common properties depending on host os
+	=================================================================================
+	-->
+
+	<property name="build_dir" value="build"/>
+
+	<target name="init-linux" if="linux">
+		<property name="init-os" value="linux"/>
+	</target>
+
+	<!-- 
+	=================================================================================
+	all: Cleans and builds the project
+	=================================================================================
+	-->
+	<target name="all" depends="init-linux">
+		<antcall target="clean"/>
+		<antcall target="build-alsa-examples"/>
+	</target>
+
+	<!-- 
+	======================================================================
+	clean: Delete all generated artifacts
+	====================================================================== 
+	-->
+	<target name="clean" depends="init-linux">
+		<delete dir="${artifacts}"/>
+
+		<delete includeemptydirs="true">
+			<fileset dir="${build_dir}">
+				<include name="**/*"/>
+				<exclude name=".gitignore"/>
+			</fileset>
+		</delete>
+	</target>
+
+	<!-- 
+	======================================================================
+	build-alsa-examples: builds the project
+	====================================================================== 
+	-->
+	<target name="build-alsa-examples">
+		<!-- Build the library and copy it to the Artifacts folder -->
+		<antcall target="build-alsa-examples-unix"/>
+	</target>
+
+	<!-- Unix build -->
+	<target name="build-unix.check">
+		<condition property="build-unix.run">
+			<or>
+				<isset property="linux"/>
+			</or>
+		</condition>
+	</target>
+
+	<!-- Build the project and copy it to the Artifacts folder-->
+	<target name="build-alsa-examples-unix" depends="build-unix.check" if="build-unix.run">
+		<!-- regenerate the projects -->
+		<exec executable="cmake" failonerror="true" taskname="cmake" dir="${build_dir}">
+			<arg line=".. -DCMAKE_BUILD_TYPE=Release"/>
+		</exec>
+		
+		<!-- build it -->
+		<exec executable="cmake" failonerror="true" taskname="cmake" dir="${build_dir}">
+			<arg line="--build ."/>
+		</exec>
+
+		<copy file="${build_dir}/alsa-examples" todir="${artifacts}"/>
+
+		<chmod file="${artifacts}/alsa-examples" perm="+x" />
+	</target>
+
+</project>

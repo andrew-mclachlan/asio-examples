@@ -1,8 +1,4 @@
-# asio-examples
-
-## Reference
-
-https://www.linuxjournal.com/article/6735
+# portaudio-examples
 
 ### Required Software ###
 
