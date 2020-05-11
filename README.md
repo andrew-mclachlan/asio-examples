@@ -14,9 +14,11 @@
 1. Download and extract CMake https://cmake.org.
     * Ensure that CMake is in your PATH.
 
-### ASIO support
+### PortAudio support
 
-1. `TODO`
+1. Download and unzip http://www.portaudio.com/download.html
+2. `cd build && cmake .. && cmake --build .`
+    * You'll end up with a dynamic and static library. E.g. libportaudio.dylib and libportaudio_static.a
 
 ## Build sample application
 

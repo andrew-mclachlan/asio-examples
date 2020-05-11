@@ -25,14 +25,9 @@ set(HEADERS
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
-include_directories(../inc)
+include_directories(../inc /Users/amclach/Work/trunky/A2B/portaudio/include)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "portaudio-examples")
-
-find_package(ALSA REQUIRED asound)
-target_link_libraries(${PROJECT_NAME} ${ALSA_LIBRARIES})
-
-include_directories(${ALSA_INCLUDE_DIRS})
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC
                             UNIX)
@@ -41,4 +36,4 @@ set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-Werror")
     
 set(CMAKE_CXX_FLAGS "-std=c++11")
 
-target_link_libraries(${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME} /Users/amclach/Work/trunky/A2B/portaudio/build/libportaudio.dylib)

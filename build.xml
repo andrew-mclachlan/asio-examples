@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="alsa-examples" default="all">
+<project name="portaudio-examples" default="all">
 
 	<property name="project.version" value="0.0.1"/>
 
@@ -32,8 +32,19 @@
 
 	<property name="build_dir" value="build"/>
 
+	<target name="init-mac" if="mac">
+		<!-- If we are building on macOS -->
+		<property name="init-os" value="mac"/>
+	</target>
+
 	<target name="init-linux" if="linux">
+		<!-- If we are building on Linux -->
 		<property name="init-os" value="linux"/>
+	</target>
+
+	<target name="init-windows" if="windows">
+		<!-- If we are building on Windows -->
+		<property name="init-os" 	value="windows"/>
 	</target>
 
 	<!-- 
@@ -43,7 +54,7 @@
 	-->
 	<target name="all" depends="init-linux">
 		<antcall target="clean"/>
-		<antcall target="build-alsa-examples"/>
+		<antcall target="build-portaudio-examples"/>
 	</target>
 
 	<!-- 
@@ -64,12 +75,12 @@
 
 	<!-- 
 	======================================================================
-	build-alsa-examples: builds the project
+	build-portaudio-examples: builds the project
 	====================================================================== 
 	-->
-	<target name="build-alsa-examples">
+	<target name="build-portaudio-examples">
 		<!-- Build the library and copy it to the Artifacts folder -->
-		<antcall target="build-alsa-examples-unix"/>
+		<antcall target="build-portaudio-examples-unix"/>
 	</target>
 
 	<!-- Unix build -->
@@ -77,12 +88,13 @@
 		<condition property="build-unix.run">
 			<or>
 				<isset property="linux"/>
+				<isset property="mac"/>
 			</or>
 		</condition>
 	</target>
 
 	<!-- Build the project and copy it to the Artifacts folder-->
-	<target name="build-alsa-examples-unix" depends="build-unix.check" if="build-unix.run">
+	<target name="build-portaudio-examples-unix" depends="build-unix.check" if="build-unix.run">
 		<!-- regenerate the projects -->
 		<exec executable="cmake" failonerror="true" taskname="cmake" dir="${build_dir}">
 			<arg line=".. -DCMAKE_BUILD_TYPE=Release"/>
@@ -93,9 +105,9 @@
 			<arg line="--build ."/>
 		</exec>
 
-		<copy file="${build_dir}/alsa-examples" todir="${artifacts}"/>
+		<copy file="${build_dir}/portaudio-examples" todir="${artifacts}"/>
 
-		<chmod file="${artifacts}/alsa-examples" perm="+x" />
+		<chmod file="${artifacts}/portaudio-examples" perm="+x" />
 	</target>
 
 </project>
