@@ -30,4 +30,5 @@
 
 ## Run sample application
 
-1. `TODO`
+1. On Linux and macOS `./Artifacts/portaudio-examples`
+2. On Windows `.\Artifacts\portaudio-examples.exe`
