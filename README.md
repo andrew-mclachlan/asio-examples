@@ -17,8 +17,12 @@
 ### PortAudio support
 
 1. Download and unzip http://www.portaudio.com/download.html
-2. `cd build && cmake .. && cmake --build .`
+2. On macOS `cd build && cmake .. && cmake --build .`
     * You'll end up with a dynamic and static library. E.g. libportaudio.dylib and libportaudio_static.a
+3. On Linux `cd build && cmake .. && cmake --build .`
+    * You'll end up with a dynamic and static library. E.g. libportaudio.so and libportaudio_static.a
+4. On Windows `cd build && cmake .. -G "Visual Studio 14 2015" && cmake --build .`
+    * You'll end up with a dynamic and static library. E.g. portaudio_x86.{dll|lib} and portaudio_static_x86.lib
 
 ## Build sample application
 

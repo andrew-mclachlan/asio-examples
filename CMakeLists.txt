@@ -4,9 +4,9 @@
 #
 # For Windows, do:
 #   cd build
-#   cmake .. -G "Visual Studio 10 2010" (for VS2010)
-#     or
 #   cmake .. -G "Visual Studio 14 2015" (for VS2015)
+#     or
+#   cmake .. -G "Visual Studio 15 2017" (for VS2017)
 #   cmake --build . --config Release
 #
 # For Unix, do:
@@ -28,25 +28,37 @@ set(COMMON_INCLUDES
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
-if(APPLE)
+include_directories(${COMMON_INCLUDES} ${PORTAUDIO_HOME}/include)
 
-include_directories(${COMMON_INCLUDES} /Users/amclach/Work/trunky/A2B/portaudio/include)
+if(MSVC)
 
-target_link_libraries(${PROJECT_NAME} /Users/amclach/Work/trunky/A2B/portaudio/build/libportaudio.dylib)
+    # add macros and disable security warnings for stl code and multi byte for MFC
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS -D__SCL_SECURE_NO_WARNINGS -DNO_WARN_MBCS_MFC_DEPRECATION)
+
+    # treat warnings as errors
+    set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "/WX")
+
+    target_link_libraries(${PROJECT_NAME} ${PORTAUDIO_HOME}/build/Release/portaudio_x86.lib)
 
 else()
 
-include_directories(${COMMON_INCLUDES} /home/amclach/GitHub/portaudio/include)
+    if(APPLE)
 
-target_link_libraries(${PROJECT_NAME} /home/amclach/GitHub/portaudio/build/libportaudio.so)
+    target_link_libraries(${PROJECT_NAME} ${PORTAUDIO_HOME}/build/libportaudio.dylib)
+
+    else()
+
+    target_link_libraries(${PROJECT_NAME} ${PORTAUDIO_HOME}/build/libportaudio.so)
+
+    endif()
+
+    set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "portaudio-examples")
+
+    target_compile_definitions(${PROJECT_NAME} PUBLIC
+                                UNIX)
+
+    set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-Werror")
+        
+    set(CMAKE_CXX_FLAGS "-std=c++11")
 
 endif()
-
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "portaudio-examples")
-
-target_compile_definitions(${PROJECT_NAME} PUBLIC
-                            UNIX)
-
-set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-Werror")
-    
-set(CMAKE_CXX_FLAGS "-std=c++11")

@@ -34,17 +34,21 @@
 
 	<target name="init-mac" if="mac">
 		<!-- If we are building on macOS -->
-		<property name="init-os" value="mac"/>
+		<property name="init-os" 	value="mac"/>
+		<property name="portaudio" 	value="/Users/amclach/Work/trunky/A2B/portaudio"/>
 	</target>
 
 	<target name="init-linux" if="linux">
 		<!-- If we are building on Linux -->
 		<property name="init-os" value="linux"/>
+		<property name="portaudio" 	value="/home/amclach/GitHub/portaudio"/>
 	</target>
 
 	<target name="init-windows" if="windows">
 		<!-- If we are building on Windows -->
 		<property name="init-os" 	value="windows"/>
+		<property name="vsversion" 	value="Visual Studio 14 2015"/>
+		<property name="portaudio" 	value="C:\\A2B\\portaudio"/>
 	</target>
 
 	<!-- 
@@ -81,6 +85,37 @@
 	<target name="build-portaudio-examples">
 		<!-- Build the library and copy it to the Artifacts folder -->
 		<antcall target="build-portaudio-examples-unix"/>
+		<antcall target="build-portaudio-examples-win32"/>
+	</target>
+
+	<!--
+	==================================================================================
+	build-portaudio-examples-win32: Builds the PortAudio examples on Windows
+	==================================================================================
+	-->
+	<target name="build-portaudio-examples-win32" if="windows" depends="init-windows">
+		<echo message="Build the PortAudio examples..." taskname="build-portaudio-examples-win32"/>
+
+		<!-- regenerate the projects -->
+		<exec executable="cmake" failonerror="true" taskname="cmake" dir="${build_dir}">
+			<arg line=".. -G &quot;${vsversion}&quot; -DPORTAUDIO_HOME=${portaudio}"/>
+		</exec>
+		
+		<!-- build it -->
+		<exec executable="cmake" failonerror="true" taskname="cmake" dir="${build_dir}">
+			<arg line="--build . --config Release"/>
+		</exec>
+		
+		<copy file="${build_dir}/Release/portaudio-examples.exe" todir="${artifacts}"/>
+
+		<!-- copy PortAudio shared library -->
+		<copy todir="${artifacts}" >
+			<fileset dir="${portaudio}/build/Release">
+				<include name="portaudio*.dll"/>
+			</fileset>
+		</copy>
+
+		<echo message="Done." taskname="build-portaudio-examples-win32"/>
 	</target>
 
 	<!-- Unix build -->
@@ -93,11 +128,17 @@
 		</condition>
 	</target>
 
-	<!-- Build the project and copy it to the Artifacts folder-->
+	<!--
+	==================================================================================
+	build-portaudio-examples-unix: Builds the PortAudio examples on Linux/macOS
+	==================================================================================
+	-->
 	<target name="build-portaudio-examples-unix" depends="build-unix.check" if="build-unix.run">
+		<echo message="Build the PortAudio examples..." taskname="build-portaudio-examples-unix"/>
+
 		<!-- regenerate the projects -->
 		<exec executable="cmake" failonerror="true" taskname="cmake" dir="${build_dir}">
-			<arg line=".. -DCMAKE_BUILD_TYPE=Release"/>
+			<arg line=".. -DCMAKE_BUILD_TYPE=Release -DPORTAUDIO_HOME=${portaudio}"/>
 		</exec>
 		
 		<!-- build it -->
@@ -108,6 +149,8 @@
 		<copy file="${build_dir}/portaudio-examples" todir="${artifacts}"/>
 
 		<chmod file="${artifacts}/portaudio-examples" perm="+x" />
+
+		<echo message="Done." taskname="build-portaudio-examples-win32"/>
 	</target>
 
 </project>
